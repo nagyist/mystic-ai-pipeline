@@ -1,6 +1,6 @@
 from typing import List, Optional
 
-from pydantic import Field, root_validator
+from pydantic import Field
 
 from pipeline.schemas.base import BaseModel
 from pipeline.schemas.compute_requirements import ComputeRequirements, ComputeType
@@ -42,26 +42,6 @@ class FunctionGetDetailed(FunctionGet):
     output: List[FunctionIO]
 
 
-class FunctionIOCreate(BaseModel):
-    name: str
-    file_id: Optional[str]
-    file: Optional[FileCreate]
-
-    @root_validator
-    def file_or_id_validation(cls, values):
-        file, file_id = values.get("file"), values.get("file_id")
-
-        file_defined = file is not None
-        file_id_defined = file_id is not None
-
-        if file_defined == file_id_defined:
-            raise ValueError(
-                "You must define either the file OR file_id of a function."
-            )
-
-        return values
-
-
 class FunctionCreate(BaseModel):
     # The local ID is assigned when a new function is used as part of a new
     # pipeline; the server uses the local ID to associated a function to a
@@ -77,23 +57,9 @@ class FunctionCreate(BaseModel):
     name: str
     hash: str
 
-    file_id: Optional[str]
-    file: Optional[FileCreate]
+    file_id: Optional[str] = Field(default=None, deprecated=True, description="Use multipart Function creation instead.")
+    file: Optional[FileCreate] = Field(default=None, deprecated=True, description="Use multipart Function creation instead.")
 
     # By default a Function will require GPU resources
     compute_type: ComputeType = ComputeType.gpu
     compute_requirements: Optional[ComputeRequirements]
-
-    @root_validator
-    def file_or_id_validation(cls, values):
-        file, file_id = values.get("file"), values.get("file_id")
-
-        file_defined = file is not None
-        file_id_defined = file_id is not None
-
-        if file_defined == file_id_defined:
-            raise ValueError(
-                "You must define either the file OR file_id of a function."
-            )
-
-        return values

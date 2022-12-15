@@ -24,6 +24,16 @@ class PipelineFileVariableGet(BaseModel):
     file: FileGet
 
 
+class PipelineVariableCreate(BaseModel):
+    local_id: str
+    name: Optional[str]
+
+    is_input: bool
+    is_output: bool
+
+    pipeline_file_variable: Optional[PipelineFileVariableGet]
+
+
 class PipelineVariableGet(BaseModel):
     local_id: str
     name: Optional[str]
@@ -84,7 +94,7 @@ class PipelineGetDetailed(PipelineGet):
 
 class PipelineCreate(BaseModel):
     name: str
-    variables: List[PipelineVariableGet]
+    variables: List[PipelineVariableCreate]
     functions: List[FunctionGet]
     models: List[ModelGet]
     graph_nodes: List[PipelineGraphNode]

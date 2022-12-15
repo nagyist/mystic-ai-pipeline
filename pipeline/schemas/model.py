@@ -1,9 +1,7 @@
 from typing import Optional
 
-from pydantic import root_validator
-
 from pipeline.schemas.base import BaseModel
-from pipeline.schemas.file import FileCreate, FileGet
+from pipeline.schemas.file import FileGet
 
 
 class ModelBase(BaseModel):
@@ -38,18 +36,3 @@ class ModelCreate(BaseModel):
     model_source: str
     hash: str
     name: str
-
-    file_id: Optional[str]
-    file: Optional[FileCreate]
-
-    @root_validator
-    def file_or_id_validation(cls, values):
-        file, file_id = values.get("file"), values.get("file_id")
-
-        file_defined = file is not None
-        file_id_defined = file_id is not None
-
-        if file_defined == file_id_defined:
-            raise ValueError("You must define either the file OR file_id of a model.")
-
-        return values
